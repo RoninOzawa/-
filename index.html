@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>李宇佳 | 运营作品集</title>
+    <!-- 引入 Markdown 解析与安全过滤库 -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.5/dist/purify.min.js"></script>
+    <style>
+        :root {
+            --bg: #ffffff;
+            --text: #1e293b;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --accent: #3b82f6;
+            --card-bg: #f8fafc;
+            --code-bg: #1e293b;
+            --code-text: #e2e8f0;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* 导航 */
+        header {
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+        }
+        nav a {
+            color: var(--text-secondary);
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        nav a:hover, nav a.active {
+            color: var(--accent);
+        }
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* 主体 */
+        main {
+            flex: 1;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+            width: 100%;
+        }
+
+        /* 首页 / 关于 */
+        .hero {
+            text-align: center;
+            padding: 2rem 0;
+        }
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .hero p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto 1.5rem;
+        }
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+        .tag {
+            background: #eff6ff;
+            color: #1e40af;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        /* 文档列表 */
+        .doc-list {
+            display: grid;
+            gap: 1rem;
+        }
+        .doc-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .doc-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .doc-info h3 {
+            margin-bottom: 0.25rem;
+        }
+        .doc-info p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        .doc-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-shrink: 0;
+        }
+        .btn {
+            padding: 0.4rem 1rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            border: none;
+        }
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+        .btn-outline {
+            border: 1px solid var(--border);
+            color: var(--text);
+            background: white;
+        }
+        .btn-outline:hover {
+            background: #f1f5f9;
+        }
+
+        /* Markdown 渲染区域 */
+        .markdown-body {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 1rem;
+            overflow-x: auto;
+        }
+        .markdown-body h1,
+        .markdown-body h2,
+        .markdown-body h3 {
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+        }
+        .markdown-body h1 { font-size: 1.8rem; border-bottom: 2px solid var(--border); padding-bottom: 0.3rem; }
+        .markdown-body h2 { font-size: 1.5rem; }
+        .markdown-body h3 { font-size: 1.2rem; }
+        .markdown-body p { margin: 0.8em 0; }
+        .markdown-body code {
+            background: #f1f5f9;
+            padding: 0.2em 0.4em;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        .markdown-body pre {
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1em 0;
+        }
+        .markdown-body pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+        }
+        .markdown-body table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1em 0;
+        }
+        .markdown-body th, .markdown-body td {
+            border: 1px solid var(--border);
+            padding: 0.5em;
+            text-align: left;
+        }
+        .markdown-body th {
+            background: #f8fafc;
+        }
+        .markdown-body blockquote {
+            border-left: 4px solid var(--accent);
+            padding-left: 1em;
+            color: var(--text-secondary);
+            margin: 1em 0;
+        }
+
+        .back-link {
+            margin-top: 1rem;
+            display: inline-block;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border);
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem;
+            }
+            nav ul {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                margin-top: 1rem;
+                gap: 0.5rem;
+            }
+            nav ul.open {
+                display: flex;
+            }
+            .hamburger {
+                display: block;
+            }
+            .doc-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">🎮 李宇佳 · 游戏运营</div>
+        <button class="hamburger" id="menu-btn" aria-label="导航菜单">☰</button>
+        <nav>
+            <ul id="nav-links">
+                <li><a href="#" data-page="home" class="active">关于我</a></li>
+                <li><a href="#" data-page="portfolio">作品集</a></li>
+                <li><a href="https://github.com/你的用户名/运营知识库" target="_blank">GitHub 知识库</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main id="app">
+        <!-- 动态内容由 JS 填充 -->
+    </main>
+
+    <footer>
+        © 2026 Uka · 用数据与 SOP 驱动运营与发行
+    </footer>
+
+    <script>
+        // 文档列表配置（手动维护，对应 docs 目录下的 Markdown 文件）
+        const documents = [
+            {
+                id: 'phantom-blade',
+                title: '《影之刃零》宣发策略分析',
+                desc: '个人的发行流程研究练习，基于公开信息逆向推导发行节奏与渠道策略。',
+                file: 'docs/Phantom Blade Zero Review.md',
+                date: '2026-05-26'
+            },
+            {
+                id: 'xiaoheihe-prd',
+                title: '小黑盒 App 首页产品需求反推与分析',
+                desc: '以“发行项目管理”视角逆向输出PRD，包含功能逻辑、异常处理与埋点方案。',
+                file: 'docs/xiaoheihe-prd.md',
+                date: '2026-05-27'
+            },
+            {
+                id: 'operations-guide',
+                title: '游戏平台运营知识库',
+                desc: '包含用户行为指标、数据漏斗、运营SOP等体系化方法论。',
+                file: 'docs/operations-knowledge.md',
+                date: '2026-05-24'
+            }
+        ];
+
+        const app = document.getElementById('app');
+        const navLinks = document.querySelectorAll('[data-page]');
+        const menuBtn = document.getElementById('menu-btn');
+        const navUl = document.getElementById('nav-links');
+
+        // 移动端导航切换
+        menuBtn.addEventListener('click', () => {
+            navUl.classList.toggle('open');
+        });
+
+        // 路由：根据 hash 切换页面
+        function handleRoute() {
+            const hash = window.location.hash.slice(1) || 'home';
+            if (hash === 'portfolio') {
+                renderPortfolio();
+            } else if (hash === 'home') {
+                renderHome();
+            } else if (hash.startsWith('doc-')) {
+                const docId = hash.replace('doc-', '');
+                loadDocument(docId);
+            } else {
+                renderHome();
+            }
+            updateActiveNav(hash);
+        }
+
+        // 更新导航高亮
+        function updateActiveNav(hash) {
+            navLinks.forEach(link => {
+                const page = link.getAttribute('data-page');
+                if (page === 'portfolio' && (hash === 'portfolio' || hash.startsWith('doc-'))) {
+                    link.classList.add('active');
+                } else if (page === 'home' && (hash === 'home' || hash === '')) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
+
+        // 首页
+        function renderHome() {
+            app.innerHTML = `
+                <div class="hero">
+                    <h1>👋 我是李宇佳</h1>
+                    <p>游戏平台运营经验，游戏爱好者+steam忠实用户，日英双语具备，善于数据复盘与归纳总结，用产品与策略思维驱动发行。</p>
+                    <div class="tag-list">
+                        <span class="tag">Steam 生态</span>
+                        <span class="tag">数据漏斗</span>
+                        <span class="tag">用户行为指标</span>
+                        <span class="tag">埋点设计</span>
+                        <span class="tag">跨部门协作</span>
+                        <span class="tag">英文社区运营</span>
+                    </div>
+                    <p style="color: var(--text-secondary);">
+                        曾在盖世小鸡的盖世游戏APP，独立负责双端资源位排期与海外社区，从零建立steam热门游戏追踪机制、与运营侧协同的用户反馈SOP。<br>
+                        
+                        \n目前正在寻找游戏发行、平台运营相关的全职机会。
+                    </p>
+                    <p>
+                        <a href="#" data-page="portfolio" class="btn btn-primary" style="margin-right:1rem;">📁 查看作品集</a>
+                        <a href="https://github.com/你的用户名/运营知识库" target="_blank" class="btn btn-outline">🔗 GitHub 知识库</a>
+                    </p>
+                </div>
+                <div style="margin-top:2rem;">
+                    <h2 style="text-align:center; margin-bottom:1rem;">⚡ 核心技能</h2>
+                    <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:1rem;">
+                        <div style="background:var(--card-bg); padding:1rem 1.5rem; border-radius:12px; border:1px solid var(--border); width:250px;">
+                            <h3>📊 数据驱动</h3>
+                            <p style="font-size:0.9rem;">依托 SteamDB 数据搭建热门游戏追踪表，输出《运营侧数据埋点需求文档》，善于洞察公司工作流程中的数据缺项。</p>
+                        </div>
+                        <div style="background:var(--card-bg); padding:1rem 1.5rem; border-radius:12px; border:1px solid var(--border); width:250px;">
+                            <h3>📋 游戏爱好者</h3>
+                            <p style="font-size:0.9rem;">热爱游戏，对SRPG如圣兽之王、APRG如仁王、精品独立游戏如大巴扎等有深入了解，能够从游戏机制出发产出游戏评价。</p>
+                        </div>
+                        <div style="background:var(--card-bg); padding:1rem 1.5rem; border-radius:12px; border:1px solid var(--border); width:250px;">
+                            <h3>🌐 海外社区</h3>
+                            <p style="font-size:0.9rem;">独立运营 Discord 英文社区，配合测试端反馈，建立可复用的标准回复话术库。</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            // 重新绑定内部链接事件
+            document.querySelectorAll('[data-page]').forEach(link => {
+                link.addEventListener('click', e => {
+                    e.preventDefault();
+                    const page = link.getAttribute('data-page');
+                    if (page === 'portfolio') {
+                        window.location.hash = 'portfolio';
+                    }
+                    navUl.classList.remove('open');
+                });
+            });
+        }
+
+        // 作品集列表
+        function renderPortfolio() {
+            let cardsHtml = documents.map(doc => `
+                <div class="doc-card" data-doc-id="${doc.id}">
+                    <div class="doc-info">
+                        <h3>${doc.title}</h3>
+                        <p>${doc.desc} · ${doc.date}</p>
+                    </div>
+                    <div class="doc-actions">
+                        <button class="btn btn-primary doc-load-btn" data-doc-id="${doc.id}">📖 在线阅读</button>
+                        <a href="${doc.file}" download class="btn btn-outline">⬇️ 下载</a>
+                    </div>
+                </div>
+            `).join('');
+
+            app.innerHTML = `
+                <h2 style="margin-bottom:1rem;">📁 运营作品集</h2>
+                <p style="color:var(--text-secondary); margin-bottom:1.5rem;">点击任意卡片即可在线预览，或直接下载 Markdown / PDF 版本（所有文档均基于公开信息，个人研究练习）</p>
+                <div class="doc-list">
+                    ${cardsHtml}
+                </div>
+                <div id="markdown-content" class="markdown-body" style="display:none;"></div>
+                <div class="back-link" style="display:none;" id="back-btn-container">
+                    <a href="#portfolio" class="btn btn-outline">← 返回作品列表</a>
+                </div>
+            `;
+
+            // 绑定加载按钮
+            document.querySelectorAll('.doc-load-btn').forEach(btn => {
+                btn.addEventListener('click', e => {
+                    const docId = btn.getAttribute('data-doc-id');
+                    window.location.hash = `doc-${docId}`;
+                });
+            });
+            // 卡片点击也能加载（除了按钮区域，防止重复触发）
+            document.querySelectorAll('.doc-card').forEach(card => {
+                card.addEventListener('click', e => {
+                    if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON') return;
+                    const docId = card.getAttribute('data-doc-id');
+                    window.location.hash = `doc-${docId}`;
+                });
+            });
+        }
+
+        // 加载并渲染 Markdown 文档
+        async function loadDocument(docId) {
+            const doc = documents.find(d => d.id === docId);
+            if (!doc) {
+                app.innerHTML = '<p>文档未找到。</p>';
+                return;
+            }
+            // 先显示加载状态
+            app.innerHTML = '<p style="text-align:center; padding:2rem;">正在加载文档...</p>';
+
+            try {
+                const response = await fetch(doc.file);
+                if (!response.ok) throw new Error('文件加载失败');
+                const mdText = await response.text();
+
+                // 使用 Marked 解析并经过 DOMPurify 安全过滤
+                const rawHtml = marked.parse(mdText);
+                const cleanHtml = DOMPurify.sanitize(rawHtml);
+
+                // 显示文档内容 + 返回按钮
+                app.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                        <h2>${doc.title}</h2>
+                        <div>
+                            <a href="${doc.file}" download class="btn btn-outline">⬇️ 下载源文件</a>
+                        </div>
+                    </div>
+                    <div class="markdown-body">${cleanHtml}</div>
+                    <div class="back-link">
+                        <a href="#portfolio" class="btn btn-outline">← 返回作品列表</a>
+                    </div>
+                `;
+            } catch (err) {
+                app.innerHTML = `
+                    <p>文档加载失败: ${err.message}</p>
+                    <a href="#portfolio" class="btn btn-outline">← 返回作品列表</a>
+                `;
+            }
+        }
+
+        // 监听 hash 变化
+        window.addEventListener('hashchange', handleRoute);
+        window.addEventListener('load', handleRoute);
+
+        // 导航点击事件
+        navLinks.forEach(link => {
+            link.addEventListener('click', e => {
+                e.preventDefault();
+                const page = link.getAttribute('data-page');
+                if (page === 'home') {
+                    window.location.hash = 'home';
+                } else if (page === 'portfolio') {
+                    window.location.hash = 'portfolio';
+                }
+                navUl.classList.remove('open');
+            });
+        });
+    </script>
+</body>
+</html>
